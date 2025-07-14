@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import LoginPage from "@/components/login-page";
 import AdminDashboard from "@/components/admin-dashboard";
