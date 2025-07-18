@@ -1,7 +1,4 @@
-"use client";
-
 import { useState } from "react";
-// import { Button } from "@/components/ui/button";
 import {
     LayoutDashboard,
     Building,
@@ -9,8 +6,8 @@ import {
     Calendar,
     LogOut,
 } from "lucide-react";
-import DashboardMain from "./dashboard-main.jsx";
-import HabitacionesSection from "./habitaciones-section";
+import DashboardMain from "@pages/Admin/components/main/DashboardMain";
+import StudentsSection from "@pages/Admin/components/students/StudentsSection";
 // import EstudiantesSection from "./estudiantes-section";
 // import ReservasSection from "./reservas-section";
 
@@ -28,12 +25,12 @@ export default function AdminDashboard({ onLogout }) {
         switch (activeSection) {
         case "dashboard":
             return <DashboardMain />;
-        case "habitaciones":
-            return <HabitacionesSection />;
+        // case "habitaciones":
+        //     return <HabitacionesSection />;
         case "estudiantes":
-            return <EstudiantesSection />;
-        case "reservas":
-            return <ReservasSection />;
+            return <StudentsSection />;
+        // case "reservas":
+        //     return <ReservasSection />;
         default:
             return <DashboardMain />;
         }
@@ -42,7 +39,7 @@ export default function AdminDashboard({ onLogout }) {
     return (
         <div className="flex min-h-screen bg-slate-100">
             {/* Sidebar */}
-            <div className="w-64 bg-white shadow-lg relative">
+            <aside className="w-64 bg-white shadow-lg relative">
                 <div className="p-6">
                     <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
@@ -84,7 +81,7 @@ export default function AdminDashboard({ onLogout }) {
                         Cerrar Sesión
                     </button>
                 </div>
-            </div>
+            </aside>
 
             {/* Main Content */}
             <div className="flex-1">
