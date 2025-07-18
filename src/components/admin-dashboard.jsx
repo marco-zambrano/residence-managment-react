@@ -10,7 +10,7 @@ import {
     LogOut,
 } from "lucide-react";
 import DashboardMain from "./dashboard-main.jsx";
-// import HabitacionesSection from "./habitaciones-section";
+import HabitacionesSection from "./habitaciones-section";
 // import EstudiantesSection from "./estudiantes-section";
 // import ReservasSection from "./reservas-section";
 
