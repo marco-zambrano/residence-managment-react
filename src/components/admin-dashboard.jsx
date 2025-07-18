@@ -9,7 +9,7 @@ import {
     Calendar,
     LogOut,
 } from "lucide-react";
-// import DashboardMain from "./dashboard-main";
+import DashboardMain from "./dashboard-main.jsx";
 // import HabitacionesSection from "./habitaciones-section";
 // import EstudiantesSection from "./estudiantes-section";
 // import ReservasSection from "./reservas-section";
@@ -102,7 +102,7 @@ export default function AdminDashboard({ onLogout }) {
                     </div>
                 </header>
 
-                {/* <main className="p-8">{renderContent()}</main> */}
+                <main className="p-8">{renderContent()}</main>
             </div>
         </div>
     );
