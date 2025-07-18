@@ -28,7 +28,7 @@ export default function StudentsSection() {
             email: "carlos.ruiz@universidad.edu",
             estado: "pendiente",
         },
-    ]);
+        ]);
 
     const columns = [
         { header: "Nombre", accessor: "nombre" },
@@ -125,7 +125,11 @@ export default function StudentsSection() {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <DataTable data={estudiantes} columns={columns} actions={actions} />
+                <DataTable 
+                    data={estudiantes} 
+                    columns={columns} 
+                    actions={actions}
+                />
             </div>
 
             {/* <EstudianteModal

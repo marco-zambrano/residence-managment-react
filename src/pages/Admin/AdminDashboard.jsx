@@ -7,9 +7,7 @@ import {
     LogOut,
 } from "lucide-react";
 import DashboardMain from "@pages/Admin/components/main/DashboardMain";
-import StudentsSection from "@pages/Admin/components/students/StudentsSection";
-// import EstudiantesSection from "./estudiantes-section";
-// import ReservasSection from "./reservas-section";
+import RoomsSection from "@pages/Admin/components/rooms/RoomsSection";
 
 export default function AdminDashboard({ onLogout }) {
     const [activeSection, setActiveSection] = useState("dashboard");
@@ -25,12 +23,12 @@ export default function AdminDashboard({ onLogout }) {
         switch (activeSection) {
         case "dashboard":
             return <DashboardMain />;
-        // case "habitaciones":
-        //     return <HabitacionesSection />;
+        // case "reservas":
+        //     return <ReservationSection />;
         case "estudiantes":
             return <StudentsSection />;
-        // case "reservas":
-        //     return <ReservasSection />;
+        case "habitaciones":
+            return <RoomsSection />;
         default:
             return <DashboardMain />;
         }
