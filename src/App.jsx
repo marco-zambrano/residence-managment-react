@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LoginPage from "./components/login-page";
-import AdminDashboard from "./components/admin-dashboard";
+import LoginPage from "@pages/Auth/login-page";
+import AdminDashboard from "@pages/Dashboard/admin-dashboard";
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
