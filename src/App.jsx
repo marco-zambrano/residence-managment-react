@@ -1,6 +1,6 @@
 import { useState } from "react";
 import LoginPage from "./components/login-page";
-// import AdminDashboard from "@/components/admin-dashboard";
+import AdminDashboard from "./components/admin-dashboard";
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,9 +26,9 @@ export default function Home() {
         return <LoginPage onLogin={handleLogin} />;
     }
 
-//     if (userType === "admin") {
-//         return <AdminDashboard onLogout={handleLogout} />;
-//     }
+    if (userType === "admin") {
+        return <AdminDashboard onLogout={handleLogout} />;
+    }
 
-//     return <div>Vista de estudiante (próximamente)</div>;
+    return <div>Vista de estudiante (próximamente)</div>;
 }

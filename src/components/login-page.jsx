@@ -1,7 +1,4 @@
 import { useState } from "react";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
 
 export default function LoginPage({ onLogin }) {
     const [username, setUsername] = useState("");
@@ -25,13 +22,13 @@ export default function LoginPage({ onLogin }) {
                         Usuario
                         </label>
                         <input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full"
-                        placeholder="admin o estudiante"
-                        required
+                            id="username"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="w-full"
+                            placeholder="admin o estudiante"
+                            required
                         />
                     </div>
 
@@ -40,13 +37,13 @@ export default function LoginPage({ onLogin }) {
                         Contraseña
                         </label>
                         <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full"
-                        placeholder="Ingresa tu contraseña"
-                        required
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full"
+                            placeholder="Ingresa tu contraseña"
+                            required
                         />
                     </div>
 
