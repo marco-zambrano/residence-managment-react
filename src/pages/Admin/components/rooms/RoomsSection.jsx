@@ -61,7 +61,7 @@ export default function RoomsSection() {
         </span>
       ),
     },
-    { header: "Precio (€)", accessor: "precio" },
+    { header: "Precio ($)", accessor: "precio" },
     { header: "Estudiante", accessor: "estudiante" },
   ];
 

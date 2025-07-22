@@ -130,7 +130,7 @@ export default function RoomsModal({
             required
           >
             <option value="disponible">Disponible</option>
-            <option value="ocupada">Ocupada</option>
+            {isEditing && <option value="ocupada">Ocupada</option>}
           </SelectField>
 
           {formData.estado === "ocupada" && (
