@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import RoomsModal from "@/pages/Admin/components/rooms/RoomsModal";
-import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
+import ConfirmDialog from "@components/ConfirmDialog";
 
 // Datos iniciales de ejemplo
 const initialRooms = [

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, X } from "lucide-react";
 import DataTable from "@/components/DataTable";
-import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
+import ConfirmDialog from "@components/ConfirmDialog";
 
 const initialReservations = [
   {

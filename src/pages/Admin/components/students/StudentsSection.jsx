@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import StudentsModal from "./StudentsModal";
-import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
+import ConfirmDialog from "@components/ConfirmDialog";
 
 // Datos iniciales de ejemplo para estudiantes
 const initialStudents = [
