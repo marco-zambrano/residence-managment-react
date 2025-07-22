@@ -133,7 +133,7 @@ export default function HabitacionesSection() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold text-slate-800">Gestión de Habitaciones</h2>
-                <button onClick={handleAddHabitacion} className="bg-slate-800 hover:bg-slate-700">
+                <button onClick={handleAddHabitacion} className="bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2 transition-colors">
                     <Plus className="w-4 h-4 mr-2" />
                     Nueva Habitación
                 </button>
