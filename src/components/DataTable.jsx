@@ -23,7 +23,9 @@ export default function DataTable({ data, columns, actions }) {
                         ))}
                         {actions && (
                             <td className="px-6 py-4 whitespace-nowrap flex justify-center items-center space-x-4">
-                                {actions.map((action, index) => (
+                                {actions
+                                    .filter(action => action.shouldShow ? action.shouldShow(item) : true)
+                                    .map((action, index) => (
                                     <button
                                         key={index}
                                         size="sm"

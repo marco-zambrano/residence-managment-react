@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, X } from "lucide-react";
 import DataTable from "@/components/DataTable";
-import ConfirmDialog from "@/pages/Admin/components/ConfirmDialog";
+import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
 
 const initialReservations = [
   {
@@ -36,18 +36,24 @@ export default function ReservationSection() {
   const [confirmState, setConfirmState] = useState({ isOpen: false });
 
   const handleUpdateStatus = (reserva, newStatus) => {
-    const actionText = newStatus === "confirmada" ? "aceptar" : "rechazar";
+    const isAccepting = newStatus === "confirmada";
+    const actionText = isAccepting ? "aceptar" : "rechazar";
+
     setConfirmState({
       isOpen: true,
       title: `Confirmar ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
       message: `¿Estás seguro de que quieres ${actionText} la reserva de ${reserva.estudiante}?`,
       onConfirm: () => {
-        setReservas((prev) =>
-          prev.map((r) => (r.id === reserva.id ? { ...r, estado: newStatus } : r))
-        );
+        if (isAccepting) {
+          setReservas((prev) =>
+            prev.map((r) => (r.id === reserva.id ? { ...r, estado: newStatus } : r))
+          );
+        } else {
+          setReservas((prev) => prev.filter((r) => r.id !== reserva.id));
+        }
         setConfirmState({ isOpen: false });
       },
-      confirmColor: newStatus === "confirmada" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
+      confirmColor: isAccepting ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
       confirmText: actionText.charAt(0).toUpperCase() + actionText.slice(1),
     });
   };
