@@ -1,166 +1,167 @@
-"use client"
-
-import { useState } from "react"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
+import RoomsModal from "@/pages/Admin/components/rooms/RoomsModal";
 
-// import HabitacionModal from "./habitacion-modal"
-// import DeleteConfirmDialog from "./delete-confirm-dialog"
+// Datos iniciales de ejemplo
+const initialRooms = [
+  {
+    id: 1,
+    numero: "101",
+    edificio: "Edificio A",
+    piso: "Piso 1",
+    estado: "ocupada",
+    precio: 350,
+    estudiante: "Juan Pérez",
+  },
+  {
+    id: 2,
+    numero: "102",
+    edificio: "Edificio A",
+    piso: "Piso 1",
+    estado: "disponible",
+    precio: 280,
+    estudiante: "",
+  },
+];
 
-export default function HabitacionesSection() {
-    const [habitaciones, setHabitaciones] = useState([
-        {
-            id: 1,
-            numero: "101",
-            edificio: "Edificio A",
-            piso: "Piso 1",
-            estado: "ocupada",
-            precio: 350,
-            estudiante: "Juan Pérez",
-        },
-        {
-            id: 2,
-            numero: "102",
-            edificio: "Edificio A",
-            piso: "Piso 1",
-            estado: "disponible",
-            precio: 280,
-        },
-        {
-            id: 3,
-            numero: "103",
-            edificio: "Edificio B",
-            piso: "Piso 1",
-            estado: "disponible",
-            precio: 350,
-        },
-        {
-            id: 4,
-            numero: "201",
-            edificio: "Edificio B",
-            piso: "Piso 2",
-            estado: "ocupada",
-            precio: 220,
-            estudiante: "Ana López",
-        },
-        {
-            id: 5,
-            numero: "202",
-            edificio: "Edificio A",
-            piso: "Piso 2",
-            estado: "disponible",
-            precio: 280,
-        },
-    ])
+// Estado inicial para el formulario del modal
+const initialFormData = {
+  numero: "",
+  edificio: "",
+  piso: "",
+  estado: "disponible",
+  precio: "",
+  estudiante: "", // Aunque no se edita en el modal, es parte del objeto
+};
 
-    const columns = [
-        { header: "Numero", accessor: "numero" },
-        { header: "Edificio", accessor: "edificio" },
-        { header: "Piso", accessor: "piso" },
-        {
-            header: "Estado",
-            accessor: "estado",
-            cell: (item) => (
-                <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        item.estado === "disponible"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                    }`}
-                >
-                    {item.estado.toUpperCase()}
-                </span>
-            ),
-        },
-        { header: "Precio", accessor: "precio" },
-        { header: "Estudiante", accessor: "estudiante" },
-    ];
+export default function RoomsSection() {
+  const [habitaciones, setHabitaciones] = useState(initialRooms);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingHabitacion, setEditingHabitacion] = useState(null); // null para crear, objeto para editar
+  const [formData, setFormData] = useState(initialFormData);
 
-    const actions = [
-        {
-            icon: <Edit className="w-4 h-4" />,
-            color: "blue",
-            onClick: (data) => handleEditHabitacion(data)
-        },
-        {
-            icon: <Trash2 className="w-4 h-4" />,
-            color: "red",
-            onClick: (data) => handleDeleteHabitacion(data)
-        }
-    ]
+  // Definición de las columnas para la DataTable
+  const columns = [
+    { header: "Número", accessor: "numero" },
+    { header: "Edificio", accessor: "edificio" },
+    { header: "Piso", accessor: "piso" },
+    {
+      header: "Estado",
+      accessor: "estado",
+      cell: (item) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            item.estado === "disponible"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {item.estado.toUpperCase()}
+        </span>
+      ),
+    },
+    { header: "Precio (€)", accessor: "precio" },
+    { header: "Estudiante", accessor: "estudiante" },
+  ];
 
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [editingHabitacion, setEditingHabitacion] = useState(null)
-    const [deleteConfirm, setDeleteConfirm] = useState({
-        isOpen: false,
-        habitacion: null,
-    })
+  // Maneja los cambios en los campos del formulario
+  const handleFormFieldChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    const handleAddHabitacion = () => {
-        setEditingHabitacion(null)
-        setIsModalOpen(true)
+  // Abre el modal para crear una nueva habitación
+  const handleAddHabitacion = () => {
+    setEditingHabitacion(null);
+    setFormData(initialFormData); // Resetea el formulario
+    setIsModalOpen(true);
+  };
+
+  // Abre el modal para editar una habitación existente
+  const handleEditHabitacion = (habitacion) => {
+    setEditingHabitacion(habitacion);
+    setFormData({ ...habitacion, precio: habitacion.precio.toString() }); // Carga datos existentes
+    setIsModalOpen(true);
+  };
+
+  // Elimina una habitación con confirmación
+  const handleDeleteHabitacion = (habitacion) => {
+    if (
+      window.confirm(
+        `¿Estás seguro de que quieres eliminar la habitación ${habitacion.numero}?`
+      )
+    ) {
+      setHabitaciones((prev) => prev.filter((h) => h.id !== habitacion.id));
+    }
+  };
+
+  // Guarda los cambios (crear o editar)
+  const handleSaveHabitacion = () => {
+    const habitacionData = {
+      ...formData,
+      precio: Number.parseFloat(formData.precio),
+    };
+
+    if (editingHabitacion) {
+      // Actualizar habitación existente
+      setHabitaciones((prev) =>
+        prev.map((h) =>
+          h.id === editingHabitacion.id
+            ? { ...habitacionData, id: editingHabitacion.id }
+            : h
+        )
+      );
+    } else {
+      // Crear nueva habitación
+      const newId =
+        habitaciones.length > 0 ? Math.max(...habitaciones.map((h) => h.id)) + 1 : 1;
+      setHabitaciones((prev) => [...prev, { ...habitacionData, id: newId }]);
     }
 
-    const handleEditHabitacion = (habitacion) => {
-        setEditingHabitacion(habitacion)
-        setIsModalOpen(true)
-    }
+    setIsModalOpen(false); // Cierra el modal
+  };
 
-    const handleDeleteHabitacion = (habitacion) => {
-        setDeleteConfirm({ isOpen: true, habitacion })
-    }
+  // Acciones para cada fila de la tabla
+  const actions = [
+    {
+      icon: <Edit className="w-4 h-4" />,
+      color: "blue",
+      onClick: (data) => handleEditHabitacion(data),
+    },
+    {
+      icon: <Trash2 className="w-4 h-4" />,
+      color: "red",
+      onClick: (data) => handleDeleteHabitacion(data),
+    },
+  ];
 
-    const confirmDelete = () => {
-        if (deleteConfirm.habitacion) {
-            setHabitaciones((prev) => prev.filter((h) => h.id !== deleteConfirm.habitacion.id))
-            setDeleteConfirm({ isOpen: false, habitacion: null })
-        }
-    }
+  return (
+    <div className="space-y-6 p-4 md:p-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="text-xl font-semibold text-slate-800">
+          Gestión de Habitaciones
+        </h2>
+        <button
+          onClick={handleAddHabitacion}
+          className="bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2 transition-colors shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Nueva Habitación</span>
+        </button>
+      </div>
 
-    const handleSaveHabitacion = (habitacionData) => {
-        if (editingHabitacion) {
-            setHabitaciones((prev) =>
-                prev.map((h) => (h.id === editingHabitacion.id ? { ...habitacionData, id: editingHabitacion.id } : h)),
-            )
-        } else {
-            const newId = Math.max(...habitaciones.map((h) => h.id)) + 1
-            setHabitaciones((prev) => [...prev, { ...habitacionData, id: newId }])
-        }
-        setIsModalOpen(false)
-    }
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <DataTable data={habitaciones} columns={columns} actions={actions} />
+      </div>
 
-    return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-slate-800">Gestión de Habitaciones</h2>
-                <button onClick={handleAddHabitacion} className="bg-slate-800 hover:bg-slate-700 text-white py-2 px-4 rounded-lg flex items-center space-x-2 transition-colors">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nueva Habitación
-                </button>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <DataTable
-                    data={habitaciones}
-                    columns={columns}
-                    actions={actions}
-                />
-            </div>
-
-            {/* <HabitacionModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveHabitacion}
-                habitacion={editingHabitacion}
-            />
-
-            <DeleteConfirmDialog
-                isOpen={deleteConfirm.isOpen}
-                onClose={() => setDeleteConfirm({ isOpen: false, habitacion: null })}
-                onConfirm={confirmDelete}
-                title="Eliminar Habitación"
-                message={`¿Estás seguro de que quieres eliminar la habitación ${deleteConfirm.habitacion?.numero}?`}
-            /> */}
-        </div>
-    )
+      <RoomsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveHabitacion}
+        formData={formData}
+        onFieldChange={handleFormFieldChange}
+        isEditing={!!editingHabitacion} // Convierte el objeto a booleano
+      />
+    </div>
+  );
 }
