@@ -1,128 +1,127 @@
-"use client";
-
 import { useState } from "react";
-import { Check, X, Eye } from "lucide-react";
+import { Check, X } from "lucide-react";
 import DataTable from "@/components/DataTable";
+import ConfirmDialog from "@/pages/Admin/components/ConfirmDialog";
 
-export default function ReservasSection() {
-	const [reservas, setReservas] = useState([
-    {
-      id: 1,
-      estudiante: "María García",
-      habitacion: "102",
-      fechaSolicitud: "19/1/2024",
-      duracion: "2 semestres",
-      estado: "pendiente",
-    },
-    {
-      id: 2,
-      estudiante: "Pedro Martín",
-      habitacion: "202",
-      fechaSolicitud: "17/1/2024",
-      duracion: "1 semestre",
-      estado: "confirmada",
-    },
-    {
-      id: 3,
-      estudiante: "Laura Sánchez",
-      habitacion: "301",
-      fechaSolicitud: "21/1/2024",
-      duracion: "1 semestre",
-      estado: "pendiente",
-    },
-  ]);
+const initialReservations = [
+  {
+    id: 1,
+    estudiante: "María García",
+    habitacion: "102",
+    fechaSolicitud: "19/1/2024",
+    duracion: "2 semestres",
+    estado: "pendiente",
+  },
+  {
+    id: 2,
+    estudiante: "Pedro Martín",
+    habitacion: "202",
+    fechaSolicitud: "17/1/2024",
+    duracion: "1 semestre",
+    estado: "confirmada",
+  },
+  {
+    id: 3,
+    estudiante: "Laura Sánchez",
+    habitacion: "301",
+    fechaSolicitud: "21/1/2024",
+    duracion: "1 semestre",
+    estado: "pendiente",
+  }
+];
 
-	const columns = [
-		{ header: "Estudiante", accessor: "estudiante" },
-		{ header: "Habitacion", accessor: "habitacion" },
-		{ header: "Fecha Solicitud", accessor: "fechaSolicitud" },
-		{ header: "Duracion", accessor: "duracion" },
-		{
-			header: "Estado",
-			accessor: "estado",
-			cell: (item) => (
-				<span
-					className={`px-2 py-1 rounded-full text-xs font-medium ${
-						item.estado === "confirmada"
-							? "bg-green-100 text-green-800"
-							: "bg-yellow-100 text-yellow-800"
-					}`}
-				>
-					{item.estado.toUpperCase()}
-				</span>
-			),
-		},
-	];
-
-	const actions = [
-		{
-			icon: <Check className="w-4 h-4" />,
-			color: "blue",
-			onClick: (data) => handleAceptarReserva(data)
-		},
-		{
-			icon: <X className="w-4 h-4" />,
-			color: "red",
-			onClick: (data) => handleRechazarReserva(data)
-		},
-		{
-			icon: <Eye className="w-4 h-4 hidden" />,
-			color: "red",
-		},
-	]
-
+export default function ReservationSection() {
+  const [reservas, setReservas] = useState(initialReservations);
   const [filtro, setFiltro] = useState("todas");
+  const [confirmState, setConfirmState] = useState({ isOpen: false });
+
+  const handleUpdateStatus = (reserva, newStatus) => {
+    const actionText = newStatus === "confirmada" ? "aceptar" : "rechazar";
+    setConfirmState({
+      isOpen: true,
+      title: `Confirmar ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
+      message: `¿Estás seguro de que quieres ${actionText} la reserva de ${reserva.estudiante}?`,
+      onConfirm: () => {
+        setReservas((prev) =>
+          prev.map((r) => (r.id === reserva.id ? { ...r, estado: newStatus } : r))
+        );
+        setConfirmState({ isOpen: false });
+      },
+      confirmColor: newStatus === "confirmada" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
+      confirmText: actionText.charAt(0).toUpperCase() + actionText.slice(1),
+    });
+  };
+
+  const columns = [
+    { header: "Estudiante", accessor: "estudiante" },
+    { header: "Habitación", accessor: "habitacion" },
+    { header: "Fecha Solicitud", accessor: "fechaSolicitud" },
+    { header: "Duración", accessor: "duracion" },
+    {
+      header: "Estado",
+      accessor: "estado",
+      cell: (item) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium ${
+            item.estado === "confirmada"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {item.estado.toUpperCase()}
+        </span>
+      ),
+    },
+  ];
+
+  const actions = [
+    {
+      icon: <Check className="w-4 h-4" />,
+      color: "green",
+      onClick: (data) => handleUpdateStatus(data, "confirmada"),
+      shouldShow: (data) => data.estado === "pendiente",
+    },
+    {
+      icon: <X className="w-4 h-4" />,
+      color: "red",
+      onClick: (data) => handleUpdateStatus(data, "rechazada"),
+      shouldShow: (data) => data.estado === "pendiente",
+    },
+  ];
 
   const reservasFiltradas = reservas.filter((reserva) => {
     if (filtro === "todas") return true;
-    if (filtro === "pendientes") return reserva.estado === "pendiente";
-    if (filtro === "confirmadas") return reserva.estado === "confirmada";
-    return true;
+    return reserva.estado === filtro;
   });
 
-  const handleAceptarReserva = (id) => {
-    setReservas((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, estado: "confirmada" } : r))
-    );
-  };
-
-  const handleRechazarReserva = (id) => {
-    setReservas((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, estado: "rechazada" } : r))
-    );
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 p-4 md:p-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-xl font-semibold text-slate-800">
           Gestión de Reservas
         </h2>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 bg-slate-200 p-1 rounded-lg">
           <button
-            variant={filtro === "todas" ? "default" : "outline"}
             onClick={() => setFiltro("todas")}
-            className={
-              filtro === "todas" ? "bg-slate-800 hover:bg-slate-700" : ""
-            }
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              filtro === "todas" ? "bg-white shadow" : "text-slate-600"
+            }`}
           >
             Todas
           </button>
           <button
-            variant={filtro === "pendientes" ? "default" : "outline"}
-            onClick={() => setFiltro("pendientes")}
-            className={
-              filtro === "pendientes" ? "bg-slate-800 hover:bg-slate-700" : ""
-            }
+            onClick={() => setFiltro("pendiente")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              filtro === "pendiente" ? "bg-white shadow" : "text-slate-600"
+            }`}
           >
             Pendientes
           </button>
           <button
-            variant={filtro === "confirmadas" ? "default" : "outline"}
-            onClick={() => setFiltro("confirmadas")}
-            className={
-              filtro === "confirmadas" ? "bg-slate-800 hover:bg-slate-700" : ""
-            }
+            onClick={() => setFiltro("confirmada")}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              filtro === "confirmada" ? "bg-white shadow" : "text-slate-600"
+            }`}
           >
             Confirmadas
           </button>
@@ -130,12 +129,18 @@ export default function ReservasSection() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-				<DataTable 
-					data={reservas} 
-					columns={columns} 
-					actions={actions}
-				/>
+        <DataTable data={reservasFiltradas} columns={columns} actions={actions} />
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState({ isOpen: false })}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        confirmColor={confirmState.confirmColor}
+      />
     </div>
   );
 }
