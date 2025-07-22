@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import RoomsModal from "@/pages/Admin/components/rooms/RoomsModal";
+import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
 
 // Datos iniciales de ejemplo
 const initialRooms = [
@@ -40,6 +41,7 @@ export default function RoomsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHabitacion, setEditingHabitacion] = useState(null); // null para crear, objeto para editar
   const [formData, setFormData] = useState(initialFormData);
+  const [confirmState, setConfirmState] = useState({ isOpen: false });
 
   // Definición de las columnas para la DataTable
   const columns = [
@@ -86,13 +88,17 @@ export default function RoomsSection() {
 
   // Elimina una habitación con confirmación
   const handleDeleteHabitacion = (habitacion) => {
-    if (
-      window.confirm(
-        `¿Estás seguro de que quieres eliminar la habitación ${habitacion.numero}?`
-      )
-    ) {
-      setHabitaciones((prev) => prev.filter((h) => h.id !== habitacion.id));
-    }
+    setConfirmState({
+      isOpen: true,
+      title: "Confirmar Eliminación",
+      message: `¿Estás seguro de que quieres eliminar la habitación ${habitacion.numero}?`,
+      onConfirm: () => {
+        setHabitaciones((prev) => prev.filter((h) => h.id !== habitacion.id));
+        setConfirmState({ isOpen: false });
+      },
+      confirmColor: "bg-red-600 hover:bg-red-700",
+      confirmText: "Eliminar",
+    });
   };
 
   // Guarda los cambios (crear o editar)
@@ -161,6 +167,15 @@ export default function RoomsSection() {
         formData={formData}
         onFieldChange={handleFormFieldChange}
         isEditing={!!editingHabitacion} // Convierte el objeto a booleano
+      />
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState({ isOpen: false })}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        confirmColor={confirmState.confirmColor}
       />
     </div>
   );

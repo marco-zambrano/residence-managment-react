@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import StudentsModal from "./StudentsModal";
+import ConfirmDialog from "@/pages/Admin/components/reservations/ConfirmDialog";
 
 // Datos iniciales de ejemplo para estudiantes
 const initialStudents = [
@@ -54,6 +55,7 @@ export default function StudentsSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEstudiante, setEditingEstudiante] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
+  const [confirmState, setConfirmState] = useState({ isOpen: false });
 
   // Simula la carga de habitaciones disponibles
   useEffect(() => {
@@ -100,13 +102,17 @@ export default function StudentsSection() {
   };
 
   const handleDeleteEstudiante = (estudiante) => {
-    if (
-      window.confirm(
-        `¿Estás seguro de que quieres eliminar al estudiante ${estudiante.nombre}?`
-      )
-    ) {
-      setEstudiantes((prev) => prev.filter((e) => e.id !== estudiante.id));
-    }
+    setConfirmState({
+      isOpen: true,
+      title: "Confirmar Eliminación",
+      message: `¿Estás seguro de que quieres eliminar al estudiante ${estudiante.nombre}?`,
+      onConfirm: () => {
+        setEstudiantes((prev) => prev.filter((e) => e.id !== estudiante.id));
+        setConfirmState({ isOpen: false });
+      },
+      confirmColor: "bg-red-600 hover:bg-red-700",
+      confirmText: "Eliminar",
+    });
   };
 
   const handleSaveEstudiante = () => {
@@ -166,6 +172,16 @@ export default function StudentsSection() {
         onFieldChange={handleFormFieldChange}
         isEditing={!!editingEstudiante}
         availableRooms={availableRooms}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState({ isOpen: false })}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        confirmText={confirmState.confirmText}
+        confirmColor={confirmState.confirmColor}
       />
     </div>
   );
