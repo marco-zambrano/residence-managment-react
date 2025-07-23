@@ -2,36 +2,10 @@ import { useState } from "react";
 import { Check, X } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import ConfirmDialog from "@components/ConfirmDialog";
-
-const initialReservations = [
-  {
-    id: 1,
-    estudiante: "María García",
-    habitacion: "102",
-    fechaSolicitud: "19/1/2024",
-    duracion: "2 semestres",
-    estado: "pendiente",
-  },
-  {
-    id: 2,
-    estudiante: "Pedro Martín",
-    habitacion: "202",
-    fechaSolicitud: "17/1/2024",
-    duracion: "1 semestre",
-    estado: "confirmada",
-  },
-  {
-    id: 3,
-    estudiante: "Laura Sánchez",
-    habitacion: "301",
-    fechaSolicitud: "21/1/2024",
-    duracion: "1 semestre",
-    estado: "pendiente",
-  }
-];
+import { useData } from "@/context/DataContext";
 
 export default function ReservationSection() {
-  const [reservas, setReservas] = useState(initialReservations);
+  const { reservations, setReservations, rooms, setRooms, students, setStudents } = useData();
   const [filtro, setFiltro] = useState("todas");
   const [confirmState, setConfirmState] = useState({ isOpen: false });
 
@@ -45,11 +19,27 @@ export default function ReservationSection() {
       message: `¿Estás seguro de que quieres ${actionText} la reserva de ${reserva.estudiante}?`,
       onConfirm: () => {
         if (isAccepting) {
-          setReservas((prev) =>
+          setReservations((prev) =>
             prev.map((r) => (r.id === reserva.id ? { ...r, estado: newStatus } : r))
           );
+          // Update room status to 'ocupada'
+          setRooms((prevRooms) =>
+            prevRooms.map((room) =>
+              room.numero === reserva.habitacion
+                ? { ...room, estado: "ocupada", estudianteAsignado: reserva.estudiante }
+                : room
+            )
+          );
+          // Update student status to 'activo' and assign room
+          setStudents((prevStudents) =>
+            prevStudents.map((student) =>
+              student.nombre === reserva.estudiante
+                ? { ...student, estado: "activo", habitacion: reserva.habitacion }
+                : student
+            )
+          );
         } else {
-          setReservas((prev) => prev.filter((r) => r.id !== reserva.id));
+          setReservations((prev) => prev.filter((r) => r.id !== reserva.id));
         }
         setConfirmState({ isOpen: false });
       },
@@ -95,7 +85,7 @@ export default function ReservationSection() {
     },
   ];
 
-  const reservasFiltradas = reservas.filter((reserva) => {
+  const reservasFiltradas = reservations.filter((reserva) => {
     if (filtro === "todas") return true;
     return reserva.estado === filtro;
   });

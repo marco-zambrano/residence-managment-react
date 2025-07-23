@@ -1,44 +1,9 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
-import StudentsModal from "./StudentsModal";
+import StudentsModal from "@pages/Admin/components/students/StudentsModal";
 import ConfirmDialog from "@components/ConfirmDialog";
-
-// Datos iniciales de ejemplo para estudiantes
-const initialStudents = [
-  {
-    id: 1,
-    nombre: "Juan Pérez",
-    email: "juan.perez@universidad.edu",
-    habitacion: "101",
-    fechaIngreso: "2024-01-15",
-    estado: "activo",
-  },
-  {
-    id: 2,
-    nombre: "Ana López",
-    email: "ana.lopez@universidad.edu",
-    habitacion: "201",
-    fechaIngreso: "2024-02-01",
-    estado: "activo",
-  },
-  {
-    id: 3,
-    nombre: "Carlos Ruiz",
-    email: "carlos.ruiz@universidad.edu",
-    habitacion: "",
-    fechaIngreso: "2024-08-20",
-    estado: "pendiente",
-  },
-];
-
-// Datos de ejemplo para habitaciones (simulando una carga de datos)
-const allRooms = [
-  { id: 1, numero: "101", edificio: "Edificio A", estado: "ocupada" },
-  { id: 2, numero: "102", edificio: "Edificio A", estado: "disponible" },
-  { id: 3, numero: "201", edificio: "Edificio B", estado: "ocupada" },
-  { id: 4, numero: "202", edificio: "Edificio B", estado: "disponible" },
-];
+import { useData } from "@/context/DataContext";
 
 // Estado inicial para el formulario del modal
 const initialFormData = {
@@ -50,18 +15,17 @@ const initialFormData = {
 };
 
 export default function StudentsSection() {
-  const [estudiantes, setEstudiantes] = useState(initialStudents);
+  const { students, setStudents, rooms, setRooms } = useData();
   const [availableRooms, setAvailableRooms] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEstudiante, setEditingEstudiante] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
   const [confirmState, setConfirmState] = useState({ isOpen: false });
 
-  // Simula la carga de habitaciones disponibles
+  // Update available rooms whenever global rooms state changes
   useEffect(() => {
-    // En una aplicación real, esto sería una llamada a una API
-    setAvailableRooms(allRooms.filter((room) => room.estado === "disponible"));
-  }, []);
+    setAvailableRooms(rooms.filter((room) => room.estado === "disponible"));
+  }, [rooms]);
 
   const columns = [
     { header: "Nombre", accessor: "nombre" },
@@ -107,7 +71,17 @@ export default function StudentsSection() {
       title: "Confirmar Eliminación",
       message: `¿Estás seguro de que quieres eliminar al estudiante ${estudiante.nombre}?`,
       onConfirm: () => {
-        setEstudiantes((prev) => prev.filter((e) => e.id !== estudiante.id));
+        setStudents((prev) => prev.filter((e) => e.id !== estudiante.id));
+        // If the student was assigned to a room, make that room available again
+        if (estudiante.habitacion) {
+          setRooms((prevRooms) =>
+            prevRooms.map((room) =>
+              room.numero === estudiante.habitacion
+                ? { ...room, estado: "disponible", estudianteAsignado: "" }
+                : room
+            )
+          );
+        }
         setConfirmState({ isOpen: false });
       },
       confirmColor: "bg-red-600 hover:bg-red-700",
@@ -117,17 +91,42 @@ export default function StudentsSection() {
 
   const handleSaveEstudiante = () => {
     if (editingEstudiante) {
-      setEstudiantes((prev) =>
+      setStudents((prev) =>
         prev.map((e) =>
           e.id === editingEstudiante.id ? { ...formData, id: editingEstudiante.id } : e
         )
       );
+      // If room changed or assigned, update room status
+      const oldRoom = rooms.find(r => r.numero === editingEstudiante.habitacion);
+      const newRoom = rooms.find(r => r.numero === formData.habitacion);
+
+      if (oldRoom && oldRoom.numero !== formData.habitacion) {
+        setRooms(prevRooms => prevRooms.map(room => 
+          room.numero === oldRoom.numero ? { ...room, estado: "disponible", estudianteAsignado: "" } : room
+        ));
+      }
+      if (newRoom && newRoom.numero === formData.habitacion) {
+        setRooms(prevRooms => prevRooms.map(room => 
+          room.numero === newRoom.numero ? { ...room, estado: "ocupada", estudianteAsignado: formData.nombre } : room
+        ));
+      }
+
     } else {
       const newId =
-        estudiantes.length > 0
-          ? Math.max(...estudiantes.map((e) => e.id)) + 1
+        students.length > 0
+          ? Math.max(...students.map((e) => e.id)) + 1
           : 1;
-      setEstudiantes((prev) => [...prev, { ...formData, id: newId }]);
+      setStudents((prev) => [...prev, { ...formData, id: newId }]);
+      // If a room is assigned to a new student, update room status
+      if (formData.habitacion) {
+        setRooms((prevRooms) =>
+          prevRooms.map((room) =>
+            room.numero === formData.habitacion
+              ? { ...room, estado: "ocupada", estudianteAsignado: formData.nombre }
+              : room
+          )
+        );
+      }
     }
     setIsModalOpen(false);
   };
@@ -161,7 +160,7 @@ export default function StudentsSection() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <DataTable data={estudiantes} columns={columns} actions={actions} />
+        <DataTable data={students} columns={columns} actions={actions} />
       </div>
 
       <StudentsModal

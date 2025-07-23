@@ -2,29 +2,8 @@ import { useState } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import DataTable from "@/components/DataTable";
 import RoomsModal from "@/pages/Admin/components/rooms/RoomsModal";
-import ConfirmDialog from "@components/ConfirmDialog";
-
-// Datos iniciales de ejemplo
-const initialRooms = [
-  {
-    id: 1,
-    numero: "101",
-    edificio: "Edificio A",
-    piso: "Piso 1",
-    estado: "ocupada",
-    precio: 350,
-    estudiante: "Juan Pérez",
-  },
-  {
-    id: 2,
-    numero: "102",
-    edificio: "Edificio A",
-    piso: "Piso 1",
-    estado: "disponible",
-    precio: 280,
-    estudiante: "",
-  },
-];
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { useData } from "@/context/DataContext";
 
 // Estado inicial para el formulario del modal
 const initialFormData = {
@@ -37,7 +16,7 @@ const initialFormData = {
 };
 
 export default function RoomsSection() {
-  const [habitaciones, setHabitaciones] = useState(initialRooms);
+  const { rooms, setRooms } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHabitacion, setEditingHabitacion] = useState(null); // null para crear, objeto para editar
   const [formData, setFormData] = useState(initialFormData);
@@ -64,7 +43,7 @@ export default function RoomsSection() {
       ),
     },
     { header: "Precio ($)", accessor: "precio" },
-    { header: "Estudiante", accessor: "estudiante" },
+    { header: "Estudiante", accessor: "estudianteAsignado" },
   ];
 
   // Maneja los cambios en los campos del formulario
@@ -93,7 +72,7 @@ export default function RoomsSection() {
       title: "Confirmar Eliminación",
       message: `¿Estás seguro de que quieres eliminar la habitación ${habitacion.numero}?`,
       onConfirm: () => {
-        setHabitaciones((prev) => prev.filter((h) => h.id !== habitacion.id));
+        setRooms((prev) => prev.filter((h) => h.id !== habitacion.id));
         setConfirmState({ isOpen: false });
       },
       confirmColor: "bg-red-600 hover:bg-red-700",
@@ -110,18 +89,18 @@ export default function RoomsSection() {
 
     if (editingHabitacion) {
       // Actualizar habitación existente
-      setHabitaciones((prev) =>
+      setRooms((prev) =>
         prev.map((h) =>
           h.id === editingHabitacion.id
-            ? { ...habitacionData, id: editingHabitacion.id }
+            ? { ...habitacionData, id: editingHabitacion.id } // Mantener el ID existente
             : h
         )
       );
     } else {
       // Crear nueva habitación
       const newId =
-        habitaciones.length > 0 ? Math.max(...habitaciones.map((h) => h.id)) + 1 : 1;
-      setHabitaciones((prev) => [...prev, { ...habitacionData, id: newId }]);
+        rooms.length > 0 ? Math.max(...rooms.map((h) => h.id)) + 1 : 1;
+      setRooms((prev) => [...prev, { ...habitacionData, id: newId }]);
     }
 
     setIsModalOpen(false); // Cierra el modal
@@ -157,7 +136,7 @@ export default function RoomsSection() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <DataTable data={habitaciones} columns={columns} actions={actions} />
+        <DataTable data={rooms} columns={columns} actions={actions} />
       </div>
 
       <RoomsModal

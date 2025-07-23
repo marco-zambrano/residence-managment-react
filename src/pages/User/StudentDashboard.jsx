@@ -2,58 +2,10 @@ import { useState } from "react";
 import { SlidersHorizontal, LogOut } from "lucide-react";
 import RoomCard from "./components/RoomCard";
 import ReservationModal from "./components/ReservationModal";
-
-// Datos de ejemplo para las habitaciones
-const initialRooms = [
-  {
-    id: 1,
-    numero: "101",
-    edificio: "Edificio A",
-    piso: "Piso 1",
-    precio: 350,
-    estado: "ocupada",
-    detalles: "Amoblada, con baño privado.",
-  },
-  {
-    id: 2,
-    numero: "102",
-    edificio: "Edificio A",
-    piso: "Piso 1",
-    precio: 280,
-    estado: "disponible",
-    detalles: "Amoblada, baño compartido.",
-  },
-  {
-    id: 3,
-    numero: "201",
-    edificio: "Edificio B",
-    piso: "Piso 2",
-    precio: 400,
-    estado: "disponible",
-    detalles: "Amoblada, con balcón y baño privado.",
-  },
-  {
-    id: 4,
-    numero: "202",
-    edificio: "Edificio B",
-    piso: "Piso 2",
-    precio: 320,
-    estado: "ocupada",
-    detalles: "Amoblada, con vistas al jardín.",
-  },
-  {
-    id: 5,
-    numero: "301",
-    edificio: "Edificio C",
-    piso: "Piso 3",
-    precio: 450,
-    estado: "disponible",
-    detalles: "Estudio completo con cocina pequeña.",
-  },
-];
+import { useData } from "@/context/DataContext";
 
 export default function StudentDashboard({ onLogout }) {
-  const [rooms] = useState(initialRooms);
+  const { rooms, setRooms, reservations, setReservations, students, setStudents } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [filterEdificio, setFilterEdificio] = useState("");
@@ -82,11 +34,40 @@ export default function StudentDashboard({ onLogout }) {
   };
 
   const handleConfirmReservation = (reservationData) => {
-    console.log("Reserva confirmada:", {
-      ...reservationData,
-      habitacionId: selectedRoom.id,
-    });
-    // Aquí iría la lógica para enviar la reserva al backend
+    const newReservation = {
+      id: reservations.length > 0 ? Math.max(...reservations.map(r => r.id)) + 1 : 1,
+      estudiante: "Nuevo Estudiante", // This should come from logged in user data
+      habitacion: selectedRoom.numero,
+      fechaSolicitud: new Date().toLocaleDateString("es-ES"),
+      duracion: reservationData.duracion,
+      estado: "pendiente",
+      comentarios: reservationData.comentarios,
+      fechaIngreso: reservationData.fechaIngreso,
+    };
+
+    setReservations((prev) => [...prev, newReservation]);
+
+    // Optionally, update room status to 'pendiente' or similar if a reservation is made
+    setRooms((prevRooms) =>
+      prevRooms.map((room) =>
+        room.id === selectedRoom.id ? { ...room, estado: "pendiente" } : room
+      )
+    );
+
+    // Add a new student if they don't exist
+    const studentExists = students.some(s => s.nombre === newReservation.estudiante);
+    if (!studentExists) {
+      const newStudent = {
+        id: students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1,
+        nombre: newReservation.estudiante,
+        email: "", // Placeholder
+        habitacion: "",
+        fechaIngreso: "",
+        estado: "pendiente",
+      };
+      setStudents((prev) => [...prev, newStudent]);
+    }
+
     handleCloseModal();
   };
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import LoginPage from "@pages/Auth/LoginPage";
 import AdminDashboard from "@pages/Admin/AdminDashboard";
 import StudentDashboard from "@pages/User/StudentDashboard";
+import { DataProvider } from "@/context/DataContext";
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,11 +28,10 @@ export default function Home() {
         return <LoginPage onLogin={handleLogin} />;
     }
 
-    if (userType === "admin") {
-        return <AdminDashboard onLogout={handleLogout} />;
-    } else if (userType === "student") {
-        return <StudentDashboard onLogout={handleLogout} />;
-    }
-
-    return <div>Vista de estudiante (próximamente)</div>;
+    return (
+        <DataProvider>
+            {userType === "admin" && <AdminDashboard onLogout={handleLogout} />}
+            {userType === "student" && <StudentDashboard onLogout={handleLogout} />}
+        </DataProvider>
+    );
 }
