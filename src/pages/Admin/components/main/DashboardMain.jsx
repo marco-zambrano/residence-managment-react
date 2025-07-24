@@ -1,28 +1,36 @@
 import { Building, Users, CheckCircle, Circle } from "lucide-react";
+import { useData } from "@/context/DataContext";
 
 export default function DashboardMain() {
+    const { rooms, students } = useData();
+
+    const totalRooms = rooms.length;
+    const occupiedRooms = rooms.filter(r => r.estado === 'ocupada').length;
+    const availableRooms = rooms.filter(r => r.estado === 'disponible').length;
+    const totalStudents = students.length;
+
     const stats = [
         {
             title: "Total Habitaciones",
-            value: "5",
+            value: totalRooms,
             icon: Building,
             color: "bg-slate-800",
         },
         {
             title: "Habitaciones Ocupadas",
-            value: "2",
+            value: occupiedRooms,
             icon: Circle,
             color: "bg-orange-500",
         },
         {
             title: "Habitaciones Disponibles",
-            value: "3",
+            value: availableRooms,
             icon: CheckCircle,
             color: "bg-green-500",
         },
         {
             title: "Estudiantes Registrados",
-            value: "2",
+            value: totalStudents,
             icon: Users,
             color: "bg-blue-500",
         },
