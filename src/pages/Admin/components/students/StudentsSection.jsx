@@ -15,7 +15,7 @@ const initialFormData = {
 };
 
 export default function StudentsSection() {
-  const { students, setStudents, rooms, setRooms } = useData();
+  const { students, rooms, addStudent, updateStudent, deleteStudent } = useData();
   const [availableRooms, setAvailableRooms] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEstudiante, setEditingEstudiante] = useState(null);
@@ -71,17 +71,7 @@ export default function StudentsSection() {
       title: "Confirmar Eliminación",
       message: `¿Estás seguro de que quieres eliminar al estudiante ${estudiante.nombre}?`,
       onConfirm: () => {
-        setStudents((prev) => prev.filter((e) => e.id !== estudiante.id));
-        // If the student was assigned to a room, make that room available again
-        if (estudiante.habitacion) {
-          setRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room.numero === estudiante.habitacion
-                ? { ...room, estado: "disponible", estudianteAsignado: "" }
-                : room
-            )
-          );
-        }
+        deleteStudent(estudiante.id);
         setConfirmState({ isOpen: false });
       },
       confirmColor: "bg-red-600 hover:bg-red-700",
@@ -91,42 +81,9 @@ export default function StudentsSection() {
 
   const handleSaveEstudiante = () => {
     if (editingEstudiante) {
-      setStudents((prev) =>
-        prev.map((e) =>
-          e.id === editingEstudiante.id ? { ...formData, id: editingEstudiante.id } : e
-        )
-      );
-      // If room changed or assigned, update room status
-      const oldRoom = rooms.find(r => r.numero === editingEstudiante.habitacion);
-      const newRoom = rooms.find(r => r.numero === formData.habitacion);
-
-      if (oldRoom && oldRoom.numero !== formData.habitacion) {
-        setRooms(prevRooms => prevRooms.map(room => 
-          room.numero === oldRoom.numero ? { ...room, estado: "disponible", estudianteAsignado: "" } : room
-        ));
-      }
-      if (newRoom && newRoom.numero === formData.habitacion) {
-        setRooms(prevRooms => prevRooms.map(room => 
-          room.numero === newRoom.numero ? { ...room, estado: "ocupada", estudianteAsignado: formData.nombre } : room
-        ));
-      }
-
+      updateStudent({ ...formData, id: editingEstudiante.id });
     } else {
-      const newId =
-        students.length > 0
-          ? Math.max(...students.map((e) => e.id)) + 1
-          : 1;
-      setStudents((prev) => [...prev, { ...formData, id: newId }]);
-      // If a room is assigned to a new student, update room status
-      if (formData.habitacion) {
-        setRooms((prevRooms) =>
-          prevRooms.map((room) =>
-            room.numero === formData.habitacion
-              ? { ...room, estado: "ocupada", estudianteAsignado: formData.nombre }
-              : room
-          )
-        );
-      }
+      addStudent(formData);
     }
     setIsModalOpen(false);
   };

@@ -2,26 +2,33 @@ import { useState } from "react";
 import LoginPage from "@pages/Auth/LoginPage";
 import AdminDashboard from "@pages/Admin/AdminDashboard";
 import StudentDashboard from "@pages/User/StudentDashboard";
-import { DataProvider } from "@/context/DataContext";
+import { DataProvider, useData } from "@/context/DataContext";
 
-export default function Home() {
+function AppContent() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userType, setUserType] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+    const { students } = useData();
 
     const handleLogin = (username, password) => {
-        // Simulación de autenticación
         if (username === "admin" && password === "admin") {
             setUserType("admin");
             setIsLoggedIn(true);
-        } else if (username === "estudiante" && password === "estudiante") {
-            setUserType("student");
-            setIsLoggedIn(true);
+            setCurrentUser({ nombre: 'Admin' });
+        } else {
+            const student = students.find(s => s.nombre === username);
+            if (student) {
+                setUserType("student");
+                setIsLoggedIn(true);
+                setCurrentUser(student);
+            }
         }
     };
 
     const handleLogout = () => {
         setIsLoggedIn(false);
         setUserType(null);
+        setCurrentUser(null);
     };
 
     if (!isLoggedIn) {
@@ -29,9 +36,17 @@ export default function Home() {
     }
 
     return (
-        <DataProvider>
+        <>
             {userType === "admin" && <AdminDashboard onLogout={handleLogout} />}
-            {userType === "student" && <StudentDashboard onLogout={handleLogout} />}
+            {userType === "student" && <StudentDashboard currentUser={currentUser} onLogout={handleLogout} />}
+        </>
+    );
+}
+
+export default function App() {
+    return (
+        <DataProvider>
+            <AppContent />
         </DataProvider>
     );
 }

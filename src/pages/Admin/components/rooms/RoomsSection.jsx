@@ -16,7 +16,7 @@ const initialFormData = {
 };
 
 export default function RoomsSection() {
-  const { rooms, setRooms } = useData();
+  const { rooms, addRoom, updateRoom, deleteRoom } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHabitacion, setEditingHabitacion] = useState(null); // null para crear, objeto para editar
   const [formData, setFormData] = useState(initialFormData);
@@ -72,7 +72,7 @@ export default function RoomsSection() {
       title: "Confirmar Eliminación",
       message: `¿Estás seguro de que quieres eliminar la habitación ${habitacion.numero}?`,
       onConfirm: () => {
-        setRooms((prev) => prev.filter((h) => h.id !== habitacion.id));
+        deleteRoom(habitacion.id);
         setConfirmState({ isOpen: false });
       },
       confirmColor: "bg-red-600 hover:bg-red-700",
@@ -88,19 +88,9 @@ export default function RoomsSection() {
     };
 
     if (editingHabitacion) {
-      // Actualizar habitación existente
-      setRooms((prev) =>
-        prev.map((h) =>
-          h.id === editingHabitacion.id
-            ? { ...habitacionData, id: editingHabitacion.id } // Mantener el ID existente
-            : h
-        )
-      );
+      updateRoom({ ...habitacionData, id: editingHabitacion.id });
     } else {
-      // Crear nueva habitación
-      const newId =
-        rooms.length > 0 ? Math.max(...rooms.map((h) => h.id)) + 1 : 1;
-      setRooms((prev) => [...prev, { ...habitacionData, id: newId }]);
+      addRoom(habitacionData);
     }
 
     setIsModalOpen(false); // Cierra el modal

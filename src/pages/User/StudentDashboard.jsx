@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useData } from "@/context/DataContext";
 
-import { SlidersHorizontal, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import RoomCard from "./components/RoomCard";
 import ReservationModal from "./components/ReservationModal";
-import RoomFilter from "./components/RoomFilter"
+import RoomFilter from "./components/RoomFilter";
 
-export default function StudentDashboard({ onLogout }) {
-  const { rooms, setRooms, reservations, setReservations, students, setStudents } = useData();
+export default function StudentDashboard({ currentUser, onLogout }) {
+  const { rooms, addReservation } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [filterEdificio, setFilterEdificio] = useState("");
@@ -37,8 +37,7 @@ export default function StudentDashboard({ onLogout }) {
 
   const handleConfirmReservation = (reservationData) => {
     const newReservation = {
-      id: reservations.length > 0 ? Math.max(...reservations.map(r => r.id)) + 1 : 1,
-      estudiante: "Nuevo Estudiante", // This should come from logged in user data
+      estudiante: currentUser.nombre,
       habitacion: selectedRoom.numero,
       fechaSolicitud: new Date().toLocaleDateString("es-ES"),
       duracion: reservationData.duracion,
@@ -47,29 +46,7 @@ export default function StudentDashboard({ onLogout }) {
       fechaIngreso: reservationData.fechaIngreso,
     };
 
-    setReservations((prev) => [...prev, newReservation]);
-
-    // Optionally, update room status to 'pendiente' or similar if a reservation is made
-    setRooms((prevRooms) =>
-      prevRooms.map((room) =>
-        room.id === selectedRoom.id ? { ...room, estado: "pendiente" } : room
-      )
-    );
-
-    // Add a new student if they don't exist
-    const studentExists = students.some(s => s.nombre === newReservation.estudiante);
-    if (!studentExists) {
-      const newStudent = {
-        id: students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1,
-        nombre: newReservation.estudiante,
-        email: "", // Placeholder
-        habitacion: "",
-        fechaIngreso: "",
-        estado: "pendiente",
-      };
-      setStudents((prev) => [...prev, newStudent]);
-    }
-
+    addReservation(newReservation);
     handleCloseModal();
   };
 
@@ -93,7 +70,7 @@ export default function StudentDashboard({ onLogout }) {
       <main className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         <div className="p-6 bg-white rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-800">
-            ¡Bienvenido, Estudiante!
+            ¡Bienvenido, {currentUser.nombre}!
           </h2>
           <p className="text-slate-600 mt-1">
             Encuentra y reserva tu habitación ideal.
@@ -101,9 +78,8 @@ export default function StudentDashboard({ onLogout }) {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-
-          <RoomFilter 
-            filterEdificio={filterEdificio} 
+          <RoomFilter
+            filterEdificio={filterEdificio}
             setFilterEdificio={setFilterEdificio}
             filterPiso={filterPiso}
             setFilterPiso={setFilterPiso}
@@ -135,6 +111,7 @@ export default function StudentDashboard({ onLogout }) {
         onClose={handleCloseModal}
         onConfirm={handleConfirmReservation}
         room={selectedRoom}
+        currentUser={currentUser}
       />
     </div>
   );

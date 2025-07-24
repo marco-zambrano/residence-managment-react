@@ -5,46 +5,21 @@ import ConfirmDialog from "@components/ConfirmDialog";
 import { useData } from "@/context/DataContext";
 
 export default function ReservationSection() {
-  const { reservations, setReservations, rooms, setRooms, students, setStudents } = useData();
+  const { reservations, acceptReservation } = useData();
   const [filtro, setFiltro] = useState("todas");
   const [confirmState, setConfirmState] = useState({ isOpen: false });
 
-  const handleUpdateStatus = (reserva, newStatus) => {
-    const isAccepting = newStatus === "confirmada";
-    const actionText = isAccepting ? "aceptar" : "rechazar";
-
+  const handleAccept = (reserva) => {
     setConfirmState({
       isOpen: true,
-      title: `Confirmar ${actionText.charAt(0).toUpperCase() + actionText.slice(1)}`,
-      message: `¿Estás seguro de que quieres ${actionText} la reserva de ${reserva.estudiante}?`,
+      title: "Confirmar Aceptación",
+      message: `¿Estás seguro de que quieres aceptar la reserva de ${reserva.estudiante}?`,
       onConfirm: () => {
-        if (isAccepting) {
-          setReservations((prev) =>
-            prev.map((r) => (r.id === reserva.id ? { ...r, estado: newStatus } : r))
-          );
-          // Update room status to 'ocupada'
-          setRooms((prevRooms) =>
-            prevRooms.map((room) =>
-              room.numero === reserva.habitacion
-                ? { ...room, estado: "ocupada", estudianteAsignado: reserva.estudiante }
-                : room
-            )
-          );
-          // Update student status to 'activo' and assign room
-          setStudents((prevStudents) =>
-            prevStudents.map((student) =>
-              student.nombre === reserva.estudiante
-                ? { ...student, estado: "activo", habitacion: reserva.habitacion }
-                : student
-            )
-          );
-        } else {
-          setReservations((prev) => prev.filter((r) => r.id !== reserva.id));
-        }
+        acceptReservation(reserva.id);
         setConfirmState({ isOpen: false });
       },
-      confirmColor: isAccepting ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
-      confirmText: actionText.charAt(0).toUpperCase() + actionText.slice(1),
+      confirmColor: "bg-green-600 hover:bg-green-700",
+      confirmText: "Aceptar",
     });
   };
 
@@ -74,13 +49,7 @@ export default function ReservationSection() {
     {
       icon: <Check className="w-4 h-4" />,
       color: "green",
-      onClick: (data) => handleUpdateStatus(data, "confirmada"),
-      shouldShow: (data) => data.estado === "pendiente",
-    },
-    {
-      icon: <X className="w-4 h-4" />,
-      color: "red",
-      onClick: (data) => handleUpdateStatus(data, "rechazada"),
+      onClick: (data) => handleAccept(data),
       shouldShow: (data) => data.estado === "pendiente",
     },
   ];

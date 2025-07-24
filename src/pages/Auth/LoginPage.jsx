@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { useData } from "@/context/DataContext";
 
 export default function LoginPage({ onLogin }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const { students } = useData();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onLogin(username, password);
+        onLogin(username, password, students);
     };
 
     return (

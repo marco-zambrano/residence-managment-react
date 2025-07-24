@@ -114,6 +114,64 @@ export const DataProvider = ({ children }) => {
   const [reservations, setReservations] = useState(initialReservations);
   const [students, setStudents] = useState(initialStudents);
 
+  const addReservation = (reservation) => {
+    setReservations([...reservations, { ...reservation, id: reservations.length + 1, estado: 'pendiente' }]);
+  };
+
+  const acceptReservation = (reservationId) => {
+    setReservations(
+      reservations.map((r) => {
+        if (r.id === reservationId) {
+          const room = rooms.find((room) => room.numero === r.habitacion);
+          if (room) {
+            setRooms(
+              rooms.map((roomItem) =>
+                roomItem.numero === r.habitacion
+                  ? { ...roomItem, estado: 'ocupada', estudianteAsignado: r.estudiante }
+                  : roomItem
+              )
+            );
+            setStudents(
+              students.map((student) =>
+                student.nombre === r.estudiante
+                  ? { ...student, habitacion: r.habitacion, estado: 'activo' }
+                  : student
+              )
+            )
+          }
+          return { ...r, estado: 'confirmada' };
+        }
+        return r;
+      })
+    );
+  };
+
+  const deleteStudent = (studentId) => {
+    setStudents(students.filter((s) => s.id !== studentId));
+  };
+
+  const updateStudent = (updatedStudent) => {
+    setStudents(
+      students.map((s) => (s.id === updatedStudent.id ? updatedStudent : s))
+    );
+  };
+
+  const deleteRoom = (roomId) => {
+    setRooms(rooms.filter((r) => r.id !== roomId));
+  };
+
+  const updateRoom = (updatedRoom) => {
+    setRooms(rooms.map((r) => (r.id === updatedRoom.id ? updatedRoom : r)));
+  };
+
+  const addRoom = (newRoom) => {
+    setRooms([...rooms, { ...newRoom, id: rooms.length + 1 }]);
+  }
+
+  const addStudent = (newStudent) => {
+    setStudents([...students, { ...newStudent, id: students.length + 1 }]);
+  }
+
   return (
     <DataContext.Provider
       value={{
@@ -123,6 +181,14 @@ export const DataProvider = ({ children }) => {
         setReservations,
         students,
         setStudents,
+        addReservation,
+        acceptReservation,
+        deleteStudent,
+        updateStudent,
+        deleteRoom,
+        updateRoom,
+        addRoom,
+        addStudent,
       }}
     >
       {children}
