@@ -116,6 +116,11 @@ export const DataProvider = ({ children }) => {
 
   const addReservation = (reservation) => {
     setReservations([...reservations, { ...reservation, id: reservations.length + 1, estado: 'pendiente' }]);
+    setRooms(rooms.map(room => 
+      room.numero === reservation.habitacion 
+        ? { ...room, estado: 'pendiente' } 
+        : room
+    ));
   };
 
   const acceptReservation = (reservationId) => {
