@@ -12,6 +12,8 @@ export default function RoomCard({ room, onReserve }) {
             className={`px-3 py-1 rounded-full text-xs font-medium ${
               room.estado === "disponible"
                 ? "bg-green-100 text-green-800"
+                : room.estado === "pendiente"
+                ? "bg-blue-100 text-blue-800"
                 : "bg-yellow-100 text-yellow-800"
             }`}
           >
@@ -22,13 +24,14 @@ export default function RoomCard({ room, onReserve }) {
       <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
         <button
           onClick={() => onReserve(room)}
-          disabled={room.estado === "ocupada"}
+          disabled={room.estado !== "disponible"}
           className={`px-4 py-2 rounded-lg text-white font-medium transition-colors ${
             room.estado === "disponible"
-              ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-400 cursor-not-allowed"
+              ? "bg-slate-800 hover:bg-slate-700"
+              : "bg-slate-400 cursor-not-allowed"
           }`}
         >
-          {room.estado === "disponible" ? "Reservar" : "Ocupada"}
+          {room.estado === "disponible" ? "Reservar" : room.estado === "pendiente" ? "Pendiente" : "Ocupada"}
         </button>
       </div>
     </div>

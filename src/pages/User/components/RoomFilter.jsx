@@ -60,6 +60,7 @@ export default function RoomFilter(
           <option value="">Todos los Estados</option>
           <option value="disponible">Disponible</option>
           <option value="ocupada">Ocupada</option>
+          <option value="pendiente">Pendiente</option>
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-700">
           <svg
