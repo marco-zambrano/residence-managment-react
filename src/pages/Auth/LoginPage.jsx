@@ -4,11 +4,15 @@ import { useData } from "@/context/DataContext";
 export default function LoginPage({ onLogin }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
     const { students } = useData();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onLogin(username, password, students);
+        const success = onLogin(username, password, students);
+        if (!success) {
+            setError("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
+        }
     };
 
     return (
@@ -17,6 +21,12 @@ export default function LoginPage({ onLogin }) {
                 <h1 className="text-2xl font-bold text-center mb-8 text-gray-800">
                 Iniciar Sesión
                 </h1>
+
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <span className="block sm:inline">{error}</span>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">

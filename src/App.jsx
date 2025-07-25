@@ -15,14 +15,17 @@ function AppContent() {
             setUserType("admin");
             setIsLoggedIn(true);
             setCurrentUser({ nombre: 'Admin' });
+            return true;
         } else {
             const student = students.find(s => s.nombre === username);
             if (student) {
                 setUserType("student");
                 setIsLoggedIn(true);
                 setCurrentUser(student);
+                return true;
             }
         }
+        return false;
     };
 
     const handleLogout = () => {
