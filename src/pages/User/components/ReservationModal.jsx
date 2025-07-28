@@ -61,6 +61,7 @@ export default function ReservationModal({
               type="date"
               id="fechaIngreso"
               value={fechaIngreso}
+              min={new Date().toISOString().split("T")[0]}
               onChange={(e) => setFechaIngreso(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-slate-500 focus:border-slate-500"
               required

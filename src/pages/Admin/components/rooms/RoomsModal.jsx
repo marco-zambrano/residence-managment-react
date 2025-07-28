@@ -72,6 +72,9 @@ export default function RoomsModal({
             label="Número de Habitación:"
             id="numero"
             name="numero"
+            type="number"
+            min="0"
+            max="999"
             value={formData.numero}
             onChange={handleInputChange}
             placeholder="Ej: 101"
@@ -115,6 +118,8 @@ export default function RoomsModal({
             id="precio"
             name="precio"
             type="number"
+            min="0"
+            max="999"
             value={formData.precio}
             onChange={handleInputChange}
             placeholder="Ej: 300"

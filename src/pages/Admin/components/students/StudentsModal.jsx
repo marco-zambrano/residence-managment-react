@@ -47,7 +47,13 @@ export default function StudentsModal({
   };
 
   const handleInputChange = (e) => {
-    onFieldChange(e.target.name, e.target.value);
+    const { name, value } = e.target;
+    if (name === "nombre") {
+      const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+      onFieldChange(name, filteredValue);
+    } else {
+      onFieldChange(name, value);
+    }
   };
 
   return (
@@ -70,6 +76,7 @@ export default function StudentsModal({
             label="Nombre Completo:"
             id="nombre"
             name="nombre"
+            maxlength="50"
             value={formData.nombre}
             onChange={handleInputChange}
             placeholder="Ej: Juan Pérez"
@@ -81,6 +88,7 @@ export default function StudentsModal({
             id="email"
             name="email"
             type="email"
+            maxlength="50"
             value={formData.email}
             onChange={handleInputChange}
             placeholder="ej: juan.perez@universidad.edu"
@@ -107,6 +115,7 @@ export default function StudentsModal({
             id="fechaIngreso"
             name="fechaIngreso"
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             value={formData.fechaIngreso}
             onChange={handleInputChange}
             required

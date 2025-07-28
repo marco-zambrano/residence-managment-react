@@ -91,10 +91,10 @@ export default function AdminDashboard({ onLogout }) {
                     </h1>
                     <div className="flex items-center space-x-3">
                         <span className="text-sm text-slate-600">
-                            Administrador: María González
+                            Administrador
                         </span>
                         <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-medium">MG</span>
+                            <span className="text-white text-sm font-medium">AD</span>
                         </div>
                     </div>
                 </header>
