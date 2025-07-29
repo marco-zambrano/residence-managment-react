@@ -6,8 +6,8 @@ export default function RoomFilter(
   filterEstado,
   setFilterEstado}) {
   return (
-    <div className="flex items-center space-x-2">
-      <div className="relative">
+    <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2 w-full md:w-auto">
+      <div className="relative w-full md:w-auto">
         <select
           value={filterEdificio}
           onChange={(e) => setFilterEdificio(e.target.value)}
@@ -29,7 +29,7 @@ export default function RoomFilter(
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative w-full md:w-auto">
         <select
           value={filterPiso}
           onChange={(e) => setFilterPiso(e.target.value)}
@@ -51,7 +51,7 @@ export default function RoomFilter(
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative w-full md:w-auto">
         <select
           value={filterEstado}
           onChange={(e) => setFilterEstado(e.target.value)}

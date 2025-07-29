@@ -17,7 +17,7 @@ export default function LoginPage({ onLogin }) {
 
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm mx-auto sm:max-w-md px-4">
                 <h1 className="text-2xl font-bold text-center mb-8 text-gray-800">
                 Iniciar Sesión
                 </h1>

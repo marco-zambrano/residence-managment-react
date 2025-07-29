@@ -62,7 +62,7 @@ export default function StudentDashboard({ currentUser, onLogout }) {
             className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <LogOut className="w-5 h-5" />
-            <span className="hidden sm:inline">Cerrar Sesión</span>
+            <span className="hidden md:inline">Cerrar Sesión</span>
           </button>
         </div>
       </header>
